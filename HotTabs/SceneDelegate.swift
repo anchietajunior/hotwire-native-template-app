@@ -11,7 +11,6 @@ import UIKit
 let rootURL = URL(string: "http://localhost:3000")!
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
     var window: UIWindow?
     
     private lazy var pathConfiguration = PathConfiguration(sources: [
@@ -33,6 +32,13 @@ extension SceneDelegate: NavigatorDelegate {
     func handle(proposal: VisitProposal) -> ProposalResult {
         print("Proposal")
         print(proposal.properties)
+        
+        let shouldHideNavbar = proposal.properties["hide_navbar"] as? Bool ?? false
+                
+        if let navigationController = navigator.rootViewController as? UINavigationController {
+            navigationController.setNavigationBarHidden(shouldHideNavbar, animated: true)
+        }
+        
         return .accept
     }
 }
