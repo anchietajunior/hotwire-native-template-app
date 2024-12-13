@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       .server(rootURL.appendingPathComponent("configurations/ios/v1.json"))
     ])
     
-    private lazy var navigator = Navigator(pathConfiguration: pathConfiguration)
+    private lazy var navigator = Navigator(pathConfiguration: pathConfiguration, delegate: self)
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let _ = (scene as? UIWindowScene) else { return }
@@ -29,3 +29,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
+extension SceneDelegate: NavigatorDelegate {
+    func handle(proposal: VisitProposal) -> ProposalResult {
+        print("Proposal")
+        print(proposal.properties)
+        return .accept
+    }
+}
