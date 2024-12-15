@@ -26,33 +26,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ])
     
     private lazy var navigators: [Navigator] = {
-            return [
-                createNavigator(tag: 0),
-                createNavigator(tag: 1),
-                createNavigator(tag: 2)
-            ]
-        }()
+        return [
+            Navigator(pathConfiguration: pathConfiguration, delegate: self),
+            Navigator(pathConfiguration: pathConfiguration, delegate: self),
+            Navigator(pathConfiguration: pathConfiguration, delegate: self)
+        ]
+    }()
     
     private lazy var tabBarController = TabBarController(navigators: navigators)
-    
-    private func createNavigator(tag: Int) -> Navigator {
-            let navigator = Navigator(pathConfiguration: pathConfiguration, delegate: self)
-            navigator.rootViewController.view.tag = tag
-            return navigator
-        }
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let _ = (scene as? UIWindowScene) else { return }
         
         window?.rootViewController = tabBarController
-        window?.makeKeyAndVisible()
-        
-        // Initial routing com delay para garantir que a UI esteja pronta
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.navigators[0].route(rootURL)
-                    self.navigators[1].route(rootURL.appendingPathComponent("todos"))
-                    self.navigators[2].route(rootURL.appendingPathComponent("pages/me"))
-                }
+
+        navigators[0].route(rootURL)
+        navigators[1].route(rootURL.appendingPathComponent("/todos"))
+        navigators[2].route(rootURL.appendingPathComponent("/pages/me"))
     }
 }
 
@@ -69,18 +59,6 @@ extension SceneDelegate: NavigatorDelegate {
         
         return .accept
     }
-    
-    func willNavigate(visit: Visitable) {
-            print("Will Navigate:")
-        print("URL:", visit.visitableURL)
-        print("Action:", visit.visitableViewController)
-        }
-        
-    func didNavigate(visit: Visitable) {
-            print("Did Navigate:")
-            print("URL:", visit.visitableURL)
-        }
-    
 }
 
 
