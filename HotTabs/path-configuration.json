@@ -18,6 +18,12 @@
         "context": "modal",
         "pull_to_refresh_enabled": false
       }
+    },
+    {
+      "patterns": [ "/todos$" ],
+      "properties": {
+        "hide_navbar": true
+      }
     }
   ]
 }
