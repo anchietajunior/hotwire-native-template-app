@@ -39,26 +39,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return navigator
     }
     
-  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-          guard let windowScene = scene as? UIWindowScene else { return }
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
           
-          window = UIWindow(windowScene: windowScene)
-          window?.rootViewController = tabBarController
-          window?.makeKeyAndVisible()
-          
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-              self.navigators.forEach { navigator in
-                  if let navController = navigator.rootViewController as? UINavigationController {
-                      navController.setNavigationBarHidden(false, animated: false)
-                  }
-              }
-              
-              self.navigators.enumerated().forEach { index, navigator in
-                  let path = Constants.Tab.items[index].path
-                  navigator.route(Constants.rootURL.appendingPathComponent(path))
-              }
-          }
-      }
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = tabBarController
+        window?.makeKeyAndVisible()
+        
+        // FAZ MAIS SENTIDO INICIAR SOMENTE A TAB DA HOME NÃO? PORQUE SE FOR USAR O HIDE TABS E CARREGAR TUDO O MENU NO INICIO ELE VAI FICAR SEM BARRA ENTENDE?
+        DispatchQueue.main.async {
+            let homeNavigator = self.navigators[0]
+            homeNavigator.route(Constants.rootURL)
+        }
+    }
 }
 
 // MARK: - NavigatorDelegate
@@ -67,11 +60,14 @@ extension SceneDelegate: NavigatorDelegate {
         print("🗨️ Proposal \(proposal)")
         
         let shouldHideNavbar = proposal.properties["hide_navbar"] as? Bool ?? false
+        let shouldHideTabs = proposal.properties["hide_tabs"] as? Bool ?? false // AQUI PARA ESCONDER A TABBAR
         
         DispatchQueue.main.async {
             if let navController = self.tabBarController.selectedViewController as? UINavigationController {
                 navController.setNavigationBarHidden(shouldHideNavbar, animated: true)
             }
+            
+            self.tabBarController.tabBar.isHidden = shouldHideTabs // SE A PROPRIEDADE VIM TRUE ELE ESCONDE AQUI
         }
         return .accept
     }
